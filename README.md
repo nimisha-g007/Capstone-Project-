@@ -5,15 +5,17 @@ It is a repository defining  our web application and devlopment  capstone projec
 ## Team Members -- Nimisha Goyal ,Sakshi Patel
 
 ## We are making ---
-# Lost & Found App – Home Page (Flask + API)
+# Lost & Found App – Home & View Posts Page (Flask + API)
 
 ## Overview
 
 This project is a **Lost & Found web application** built using **Flask** and basic APIs. Which includes  the home page serves as the central hub where users can report lost items and interact with others who may have found them.
 It is designed to help users report lost items and connect with people who may have found them.
 
-## Home Page Features
+## We both are making are diferent Lost and found page so that each have the knowledge to work
+### MY App Work --
 
+## Home Page Features
 ### 1. User Profile Display
 
 * Each post is linked to a user profile.
@@ -23,6 +25,8 @@ It is designed to help users report lost items and connect with people who may h
   * Email  --> for Data Validation 
   * Contact Info --> for Data Validation 
   * Profile picture (optional)
+
+## View Posts Page 
 
 ### 2. Lost Item Post
 
@@ -67,7 +71,7 @@ It is designed to help users report lost items and connect with people who may h
   * Manage user sessions (basic)
   * Process image uploads
 
-## User Flow (Home Page Only)
+## User Flow (Home Page & View Posts Page Only)
 
 1. User makes profile  in and lands on the homepage.
 2. User posts a lost item with an image.
