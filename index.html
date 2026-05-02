@@ -1,31 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
-
-
+<html>
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Web App - 1</title>
-   <link rel="stylesheet" href='./styles.css'>
+<title>Lost & Found</title>
+
+<style>
+body { font-family: Arial; text-align: center; background:#f4f6f8; }
+.container { background:white; padding:20px; width:350px; margin:20px auto; border-radius:10px; }
+input, textarea { width:90%; padding:10px; margin:8px; }
+button { padding:10px; background:#007BFF; color:white; border:none; cursor:pointer; }
+.nav-btn { margin-top:10px; background:#28a745; }
+</style>
+
 </head>
-
-
 <body>
-   <header></header>
-   <main id="root">
-       <div class="card">
-           <img
-               src="https://cloud-computing-lectures-likhilesh-abcdxyz.s3.ap-south-1.amazonaws.com/likhi-laptop.jpg" />
-           <div class="product-info">
-               <h4>Macbook Pro M1 - 2022</h4>
-               <p>Price: $1100</p>
-               <p>Rating: 4.9⭐️</p>
-           </div>
-       </div>
-   </main>
-   <footer></footer>
-   <script src="./script.js"></script>
+
+<h1>Lost & Found Portal</h1>
+
+<div class="container">
+    <input id="name" placeholder="Name">
+    <input id="contact" placeholder="10-digit contact">
+    <input id="email" placeholder="Email">
+    <textarea id="desc" placeholder="Describe item"></textarea>
+    <input type="file" id="image">
+
+    <button onclick="createPost()">Submit</button>
+    <br>
+    <button class="nav-btn" onclick="goToPosts()">View All Posts</button>
+</div>
+
+<script>
+
+let isSubmitting = false;
+
+// Navigation
+function goToPosts() {
+    window.location.href = "posts.html";
+}
+
+// Validation
+function isValidPhone(phone) {
+    return /^[0-9]{10}$/.test(phone);
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
+// Create Post
+function createPost() {
+    if (isSubmitting) return;
+
+    let name = document.getElementById("name").value;
+    let contact = document.getElementById("contact").value;
+    let email = document.getElementById("email").value;
+    let desc = document.getElementById("desc").value;
+    let file = document.getElementById("image").files[0];
+
+    if (!name || !contact || !email || !desc || !file) {
+        alert("Fill all fields");
+        return;
+    }
+
+    if (!isValidPhone(contact) || !isValidEmail(email)) {
+        alert("Invalid phone or email");
+        return;
+    }
+
+    isSubmitting = true;
+
+    let reader = new FileReader();
+
+    reader.onload = function () {
+        fetch("http://127.0.0.1:5000/posts", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                name,
+                contact,
+                email,
+                description: desc,   // correct key
+                image: reader.result
+            })
+        })
+        .then(() => {
+            alert("Post Added!");
+            isSubmitting = false;
+        });
+    };
+
+    reader.readAsDataURL(file);
+}
+
+</script>
+
 </body>
-
-
 </html>

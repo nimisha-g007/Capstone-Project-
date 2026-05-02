@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>All Posts</title>
+
+<style>
+body { font-family: Arial; text-align:center; background:#f4f6f8; }
+
+.post {
+    background:white;
+    margin:20px auto;
+    padding:15px;
+    width:350px;
+    border-radius:10px;
+}
+
+.post img {
+    width:100%;
+    margin-top:10px;
+}
+
+.comment {
+    background:#eee;
+    margin-top:8px;
+    padding:8px;
+}
+
+button {
+    padding:8px;
+    background:#007BFF;
+    color:white;
+    border:none;
+    cursor:pointer;
+    margin-top:5px;
+}
+
+.back-btn {
+    background:#28a745;
+    margin:20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>All Lost & Found Posts</h1>
+
+<button class="back-btn" onclick="goHome()">← Back to Home</button>
+
+<div id="posts"></div>
+
+<script>
+
+// Navigation
+function goHome() {
+    window.location.href = "index.html";
+}
+
+// Load posts
+function loadPosts() {
+    fetch("http://127.0.0.1:5000/posts")
+    .then(res => res.json())
+    .then(data => displayPosts(data));
+}
+
+// Display posts
+function displayPosts(data) {
+    let container = document.getElementById("posts");
+    container.innerHTML = "";
+
+    data.forEach(post => {
+        let div = document.createElement("div");
+        div.className = "post";
+
+        div.innerHTML = `
+            <h3>${post.name}</h3>
+            <p>${post.description}</p>
+            <img src="${post.image}">
+            
+            <input type="text" id="name-${post.id}" placeholder="Your name">
+            <input type="text" id="reply-${post.id}" placeholder="Write reply">
+
+            <button onclick="addReply(${post.id})">Reply</button>
+
+            <div id="replies-${post.id}"></div>
+        `;
+
+        container.appendChild(div);
+
+        let replyBox = div.querySelector(`#replies-${post.id}`);
+
+        if (post.replies && post.replies.length > 0) {
+            post.replies.forEach(r => {
+                replyBox.innerHTML += `
+                    <div class="comment">
+                        <b>${r.name}</b>: ${r.text} <br>
+                        <small>${new Date(r.created_at).toLocaleString()}</small>
+                    </div>
+                `;
+            });
+        }
+    });
+}
+
+// Add comment
+function addReply(postId){
+    let name = document.getElementById(`name-${postId}`).value;
+    let text = document.getElementById(`reply-${postId}`).value;
+
+    if (!name || !text) {
+        alert("Enter name and reply");
+        return;
+    }
+
+    fetch(`http://127.0.0.1:5000/posts/${postId}/reply`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, text })
+    })
+    .then(() => loadPosts());
+}
+
+
+// Load on start
+window.onload = loadPosts;
+
+</script>
+
+</body>
+</html>
