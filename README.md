@@ -2,6 +2,7 @@
 
 It is a repository defining  our web application and devlopment  capstone project which will include HTML and Css with Javascript with API  function and database connection  in backend with python and flask . 
 
+## Team Name -- FindSquad
 ## Team Members -- Nimisha Goyal ,Sakshi Patel
 
 ## We are making ---
