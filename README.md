@@ -15,7 +15,7 @@ It is designed to help users report lost items and connect with people who may h
 
 ## We both are making are diferent Lost and found app so that each have the knowledge to work .
 
-### MY App Work --
+### MY (Nimisha Goyal)  Side App Work -- 
 ## All this I have to do only !!
 
 ## Home Page Features
@@ -27,71 +27,55 @@ It is designed to help users report lost items and connect with people who may h
   * Username
   * Email  --> for Data Validation 
   * Contact Info --> for Data Validation 
-  * Profile picture (optional)
+  * Lost Item image upload
+  * Item Description
 
 ## View Posts Page 
-
 ### 2. Lost Item Post
 
-* Users can upload:
-  
+* Users  uploads:
   * Image of the lost item
-  * Description (e.g., “Lost black wallet near college gate”)
-    
-* Each post appears on the home page as a card or feed item.
+  * Description (e.g., “Lost black wallet near college gate”)    
 
 ### 3. Founder Interaction (Comments Section)
-
 * Other users (finders) can respond directly to a lost item post.
 * They can:
-  
-  * Comment: *“I found it here…”*
-  * Provide location details
-  * Add an optional image of the found item
+  * Reply: *“I found it here…”*
+  * Provide location detail
 
 ### 4. Image Upload Support
-
-* Both the original poster and the finder can upload images:
-  
+* The owner can edit the original post and can upload it:
   * Lost item image (by owner)
-  * Found item proof (by finder)
+  * Edit the same image (by owner)
 
 ### 5. API Integration (Basic)
-
 * Backend APIs handle:
-  
   * Fetching all lost item posts
   * Posting a new lost item
   * Adding comments (found responses)
-  * Uploading images
+  * Updating images
 
 ### 6. Flask Backend
-
 * Flask is used to:
-  
   * Render the homepage
   * Handle API routes
   * Manage user sessions (basic)
   * Process image uploads
 
 ## User Flow (Home Page & View Posts Page Only)
-
 1. User makes profile  in and lands on the homepage.
 2. User posts a lost item with an image.
 3. Other users scroll through posts.
 4. A finder comments on the post:
-   
+5. User can edit the post if mistakenly wrong image is uploded.
    * Adds message: *“I found this near XYZ location”*
-   * Uploads supporting image.
-     
 6. Original user can view responses and take action.
-
+   
 ## Tech Stack (Basic)
-
 * **Frontend:** HTML, CSS (basic UI)
 * **Backend:** Flask (Python)
 * **API:** RESTful endpoints for posts and comments
-* **Storage:** Local storage / database (e.g., SQLite)
+* **Storage:** Local storage / database (e.g., MySQL) through Supabase
 
 ## Goal
 To create a simple, interactive platform where users can **report lost items and connect with people who may have found them**, all from a single homepage interface.
