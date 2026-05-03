@@ -35,6 +35,35 @@ def add_post():
 
     return jsonify(response.data), 201
 
+#UPDATE POST
+@app.route('/posts/<int:post_id>', methods=['PUT'])
+def update_post(post_id):
+    data = request.json
+
+    update_data = {
+        "name": data.get("name"),
+        "description": data.get("description")
+    }
+
+    if data.get("image"):
+        update_data["image"] = data.get("image")
+
+    # Update main post
+    supabase.table("posts") \
+        .update(update_data) \
+        .eq("id", post_id) \
+        .execute()
+
+    # Save update history
+    supabase.table("post_updates").insert({
+        "post_id": post_id,
+        "name": update_data.get("name"),
+        "description": update_data.get("description"),
+        "image": update_data.get("image")
+    }).execute()
+
+    return jsonify({"message": "Updated successfully"})
+
 # ADD reply
 @app.route('/posts/<int:post_id>/reply', methods=['POST'])
 def add_reply(post_id):

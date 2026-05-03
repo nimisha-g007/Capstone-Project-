@@ -4,126 +4,325 @@
 <title>All Posts</title>
 
 <style>
-body { font-family: Arial; text-align:center; background:#f4f6f8; }
 
-.post {
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI', sans-serif;
+    /* background: linear-gradient(135deg, #e0f7f1, #acb6e5); */
+    background: linear-gradient(135deg, #e8f8f3, #d4f1e8);
+    min-height:100vh;
+}
+
+/* Header */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px 40px;
+}
+
+.header h1{
+    font-size:40px;
+}
+
+/* Back button */
+.back-btn{
+    background:#28a745;
+    border:none;
+    padding:12px 18px;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+/* Grid */
+#posts{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
+    gap:25px;
+    padding:20px;
+}
+
+/* Card */
+.post{
     background:white;
-    margin:20px auto;
-    padding:15px;
-    width:350px;
-    border-radius:10px;
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.12);
+    display:flex;
+    flex-direction:column;
+    transition:.3s;
 }
 
-.post img {
+.post:hover{
+    transform:translateY(-5px);
+}
+
+/* Editable fields */
+.editable{
+    border:1px dashed transparent;
+    padding:5px;
+}
+
+.editable:focus{
+    outline:none;
+    border:1px dashed #007BFF;
+}
+
+/* Image */
+.post img{
     width:100%;
-    margin-top:10px;
+    height:200px;
+    object-fit:cover;
+    border-radius:12px;
+    margin:15px 0;
+    cursor:pointer;
 }
 
-.comment {
-    background:#eee;
+/* Inputs */
+.post input{
+    width:100%;
+    padding:10px;
     margin-top:8px;
-    padding:8px;
+    border:1px solid #ddd;
+    border-radius:8px;
 }
 
-button {
-    padding:8px;
+/* Buttons */
+.post button{
+    margin-top:10px;
+    padding:10px;
     background:#007BFF;
     color:white;
     border:none;
+    border-radius:8px;
     cursor:pointer;
-    margin-top:5px;
 }
 
-.back-btn {
-    background:#28a745;
-    margin:20px;
+.post button:hover{
+    opacity:.9;
 }
+
+/* Replies */
+.comment{
+    background:#f8f9fa;
+    padding:10px;
+    margin-top:8px;
+    border-radius:8px;
+    border-left:4px solid #007BFF;
+}
+
+.comment small{
+    color:gray;
+}
+
+/* Image popup */
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.9);
+    justify-content:center;
+    align-items:center;
+}
+
+.modal img{
+    max-width:90%;
+    max-height:90%;
+    border-radius:10px;
+}
+
+.close-btn{
+    position:absolute;
+    top:20px;
+    right:40px;
+    color:white;
+    font-size:40px;
+    cursor:pointer;
+}
+
 </style>
-
 </head>
 
 <body>
 
-<h1>All Lost & Found Posts</h1>
-
-<button class="back-btn" onclick="goHome()">← Back to Home</button>
+<div class="header">
+    <h1>📦 LOST ITEMS POSTS</h1>
+    <button class="back-btn" onclick="goHome()">← Back</button>
+</div>
 
 <div id="posts"></div>
+
+<!-- Image popup -->
+<div class="modal" id="imageModal" onclick="closeImage()">
+    <span class="close-btn">&times;</span>
+    <img id="modalImage">
+</div>
 
 <script>
 
 // Navigation
-function goHome() {
-    window.location.href = "index.html";
+function goHome(){
+    window.location.href="index.html";
 }
 
 // Load posts
-function loadPosts() {
+function loadPosts(){
     fetch("http://127.0.0.1:5000/posts")
-    .then(res => res.json())
-    .then(data => displayPosts(data));
+    .then(res=>res.json())
+    .then(data=>displayPosts(data));
 }
 
 // Display posts
-function displayPosts(data) {
-    let container = document.getElementById("posts");
-    container.innerHTML = "";
+function displayPosts(data){
 
-    data.forEach(post => {
-        let div = document.createElement("div");
-        div.className = "post";
+    let container=document.getElementById("posts");
+    container.innerHTML="";
 
-        div.innerHTML = `
-            <h3>${post.name}</h3>
-            <p>${post.description}</p>
-            <img src="${post.image}">
-            
+    data.forEach(post=>{
+
+        let div=document.createElement("div");
+        div.className="post";
+
+        div.innerHTML=`
+
+            <h3 contenteditable="true" class="editable" id="edit-name-${post.id}">
+                ${post.name}
+            </h3>
+
+            <p contenteditable="true" class="editable" id="edit-desc-${post.id}">
+                ${post.description}
+            </p>
+
+            <img 
+                src="${post.image || 'https://via.placeholder.com/400'}"
+                onclick="openImage(this.src)"
+            >
+
+            <input type="file" id="edit-image-${post.id}">
+
+            <button onclick="updatePost(${post.id})">
+                ✏️ EDIT POST
+            </button>
+
             <input type="text" id="name-${post.id}" placeholder="Your name">
             <input type="text" id="reply-${post.id}" placeholder="Write reply">
 
-            <button onclick="addReply(${post.id})">Reply</button>
+            <button onclick="addReply(${post.id})">
+                Reply
+            </button>
 
             <div id="replies-${post.id}"></div>
         `;
 
         container.appendChild(div);
 
-        let replyBox = div.querySelector(`#replies-${post.id}`);
+        let replyBox=div.querySelector(`#replies-${post.id}`);
 
-        if (post.replies && post.replies.length > 0) {
-            post.replies.forEach(r => {
-                replyBox.innerHTML += `
+        if(post.replies){
+            post.replies.forEach(r=>{
+                replyBox.innerHTML+=`
                     <div class="comment">
-                        <b>${r.name}</b>: ${r.text} <br>
+                        <b>${r.name}</b>: ${r.text}
+                        <br>
                         <small>${new Date(r.created_at).toLocaleString()}</small>
                     </div>
                 `;
             });
         }
+
     });
 }
 
-// Add comment
-function addReply(postId){
-    let name = document.getElementById(`name-${postId}`).value;
-    let text = document.getElementById(`reply-${postId}`).value;
+// UPDATE POST
+function updatePost(postId){
 
-    if (!name || !text) {
+    let name = document.getElementById(`edit-name-${postId}`).innerText.trim();
+    let desc = document.getElementById(`edit-desc-${postId}`).innerText.trim();
+
+    let fileInput = document.getElementById(`edit-image-${postId}`);
+    let file = fileInput.files[0];
+
+    if(file){
+        let reader = new FileReader();
+
+        reader.onload = function(){
+            sendUpdate(postId, name, desc, reader.result);
+        };
+
+        reader.readAsDataURL(file);
+    } 
+    else {
+        sendUpdate(postId, name, desc, null);
+    }
+}
+
+function sendUpdate(postId, name, desc, image){
+
+    let bodyData = {
+        name: name,
+        description: desc
+    };
+
+    // only send image if changed
+    if(image){
+        bodyData.image = image;
+    }
+
+    fetch(`http://127.0.0.1:5000/posts/${postId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bodyData)
+    })
+    .then(() => {
+        alert("Post Updated!");
+        loadPosts();
+    });
+}
+
+// Add reply
+function addReply(postId){
+
+    let name=document.getElementById(`name-${postId}`).value;
+    let text=document.getElementById(`reply-${postId}`).value;
+
+    if(!name || !text){
         alert("Enter name and reply");
         return;
     }
 
     fetch(`http://127.0.0.1:5000/posts/${postId}/reply`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ name, text })
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({ name, text })
     })
-    .then(() => loadPosts());
+    .then(()=>loadPosts());
 }
 
+// Image popup
+function openImage(src){
+    document.getElementById("modalImage").src=src;
+    document.getElementById("imageModal").style.display="flex";
+}
 
-// Load on start
-window.onload = loadPosts;
+function closeImage(){
+    document.getElementById("imageModal").style.display="none";
+}
+
+// Start
+window.onload=loadPosts;
 
 </script>
 

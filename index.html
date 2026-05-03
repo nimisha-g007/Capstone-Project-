@@ -4,40 +4,151 @@
 <title>Lost & Found</title>
 
 <style>
-body { font-family: Arial; text-align: center; background:#f4f6f8; }
-.container { background:white; padding:20px; width:350px; margin:20px auto; border-radius:10px; }
-input, textarea { width:90%; padding:10px; margin:8px; }
-button { padding:10px; background:#007BFF; color:white; border:none; cursor:pointer; }
-.nav-btn { margin-top:10px; background:#28a745; }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    /* background: linear-gradient(135deg, #74ebd5, #acb6e5); */
+    background: linear-gradient(135deg, #e8f8f3, #d4f1e8);
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Card container */
+.container {
+    background: white;
+    padding: 25px;
+    width: 380px;
+    margin: 30px auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+}
+
+/* Inputs */
+input, textarea {
+    width: 90%;
+    padding: 12px;
+    margin: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+input:focus, textarea:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+
+/* Buttons */
+button {
+    padding: 12px;
+    width: 90%;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+/* Submit button */
+button:first-of-type {
+    background: #007BFF;
+    color: white;
+}
+
+button:first-of-type:hover {
+    background: #0056b3;
+}
+
+/* Navigation button */
+.nav-btn {
+    background: #28a745;
+    color: white;
+}
+
+.nav-btn:hover {
+    background: #1e7e34;
+}
+
+/* File input styling */
+input[type="file"] {
+    border: none;
+}
+
+/* Small screen responsive */
+@media (max-width: 400px) {
+    .container {
+        width: 90%;
+    }
+}
+
+/* Header layout */
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Heading style */
+.header h1 {
+    color: rgb(8, 1, 1);
+    font-size: 32px;
+    margin: 0;
+}
+
+/* Image beside heading */
+.header img {
+    width: 90px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+/* Hover effect */
+.header img:hover {
+    transform: scale(1.1);
+}
 </style>
-
 </head>
+
 <body>
+<div class="header">
+    <h1>LOST & FOUND PORTAL</h1>
+    <img src="findsquad_logo.svg" alt="Logo">
+</div>
 
-<h1>Lost & Found Portal</h1>
+<div class="main">
+    
+    <!-- LEFT SIDE (FORM) -->
+    <div class="container">
+        <input id="name" placeholder="Name">
+        <input id="contact" placeholder="10-digit contact">
+        <input id="email" placeholder="Email">
+        <textarea id="desc" placeholder="Describe item"></textarea>
+        <input type="file" id="image">
 
-<div class="container">
-    <input id="name" placeholder="Name">
-    <input id="contact" placeholder="10-digit contact">
-    <input id="email" placeholder="Email">
-    <textarea id="desc" placeholder="Describe item"></textarea>
-    <input type="file" id="image">
+        <button onclick="createPost()">Submit</button>
+        <br>
+        <button class="nav-btn" onclick="goToPosts()">View All Posts</button>
+    </div>
 
-    <button onclick="createPost()">Submit</button>
-    <br>
-    <button class="nav-btn" onclick="goToPosts()">View All Posts</button>
 </div>
 
 <script>
-
 let isSubmitting = false;
 
-// Navigation
 function goToPosts() {
     window.location.href = "posts.html";
 }
 
-// Validation
 function isValidPhone(phone) {
     return /^[0-9]{10}$/.test(phone);
 }
@@ -46,7 +157,6 @@ function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-// Create Post
 function createPost() {
     if (isSubmitting) return;
 
@@ -56,7 +166,7 @@ function createPost() {
     let desc = document.getElementById("desc").value;
     let file = document.getElementById("image").files[0];
 
-    if (!name || !contact || !email || !desc || !file) {
+    if (!name || !contact || !email || !desc) {
         alert("Fill all fields");
         return;
     }
@@ -78,19 +188,36 @@ function createPost() {
                 name,
                 contact,
                 email,
-                description: desc,   // correct key
-                image: reader.result
+                description: desc,
+                image: file ? reader.result : null
             })
         })
-        .then(() => {
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
             alert("Post Added!");
+
+            document.getElementById("name").value = "";
+            document.getElementById("contact").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("desc").value = "";
+            document.getElementById("image").value = "";
+
+            window.location.href = "posts.html";
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error adding post");
             isSubmitting = false;
         });
     };
 
-    reader.readAsDataURL(file);
+    if (file) {
+        reader.readAsDataURL(file);
+    } else {
+        reader.onload();
+    }
 }
-
 </script>
 
 </body>
